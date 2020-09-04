@@ -195,7 +195,7 @@ __git_dequote ()
 # on the command line:
 #
 #	__git_reassemble_comp_words_by_ref '=:'
-#	if test "${words_[cword_-1]}" = -w
+#	if test "${words_[cword_-1]-}" = -w
 #	then
 #		...
 #	fi
@@ -244,7 +244,7 @@ __git_reassemble_comp_words_by_ref()
 				((j--))
 			fi
 			first=
-			words_[$j]=${words_[j]}${COMP_WORDS[i]}
+			words_[$j]=${words_[j]-}${COMP_WORDS[i]}
 			if [ $i = $COMP_CWORD ]; then
 				cword_=$j
 			fi
@@ -255,7 +255,7 @@ __git_reassemble_comp_words_by_ref()
 				return
 			fi
 		done
-		words_[$j]=${words_[j]}${COMP_WORDS[i]}
+		words_[$j]=${words_[j]-}${COMP_WORDS[i]}
 		if [ $i = $COMP_CWORD ]; then
 			cword_=$j
 		fi
@@ -271,17 +271,17 @@ _get_comp_words_by_ref ()
 		shift 2
 	fi
 	__git_reassemble_comp_words_by_ref "$exclude"
-	cur_=${words_[cword_]}
+	cur_=${words_[cword_]-}
 	while [ $# -gt 0 ]; do
 		case "$1" in
 		cur)
 			cur=$cur_
 			;;
 		prev)
-			prev=${words_[$cword_-1]}
+			prev=${words_[$cword_-1]-}
 			;;
 		words)
-			words=("${words_[@]}")
+			words=("${words_[@]-}")
 			;;
 		cword)
 			cword=$cword_
@@ -417,7 +417,7 @@ __gitcomp_builtin ()
 	eval "options=\${$var-}"
 
 	local completion_helper
-	if [ "$GIT_COMPLETION_SHOW_ALL" = "1" ]; then
+	if [ "${GIT_COMPLETION_SHOW_ALL-}" = "1" ]; then
 		completion_helper="--git-completion-helper-all"
 	else
 		completion_helper="--git-completion-helper"
